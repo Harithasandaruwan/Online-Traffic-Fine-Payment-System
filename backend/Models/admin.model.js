@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema =new mongoose.Schema({
+const adminSchema =new mongoose.Schema({
     username:{
         type:String,
         required:true,
@@ -16,12 +16,9 @@ const userSchema =new mongoose.Schema({
         required:true,
      
     },
-    profilePicture:{
-        type:String,
-        default:'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg',
-    }
+    
 },{timestamps:true});
 
-const User=mongoose.model("User",userSchema)
+const Admin=mongoose.model("Admin",adminSchema)
 
-export default User;
+export default Admin;
