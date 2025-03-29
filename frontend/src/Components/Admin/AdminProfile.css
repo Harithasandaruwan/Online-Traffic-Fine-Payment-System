@@ -1,3 +1,11 @@
+.admin-profile-container{
+    margin-top: 120px;
+    margin-bottom: 100px;
+    border-radius: 12px;
+    width: 800px;
+}
+
+
 .admin-profile {
   min-height: 100vh;
   position: relative;

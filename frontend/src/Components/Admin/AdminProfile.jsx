@@ -3,6 +3,8 @@ import { useAuthStore } from "../User Tools/authStore";
 import { LogOut } from "lucide-react";
 import AdminManagement from "./AdminManagement";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import "./AdminProfile.css"
 
 const AdminProfile = () => {
   const { user, logout } = useAuthStore();
@@ -14,7 +16,9 @@ const AdminProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 relative z-50">
+    <>
+    < Navbar />
+    <div className="min-h-screen bg-gray-900 relative z-50  admin-profile-container">
       <div className="container mx-auto px-4 py-8 relative z-50">
         {/* Admin Header */}
         <div className="flex justify-between items-center mb-8 relative z-50">
@@ -41,6 +45,7 @@ const AdminProfile = () => {
         </motion.div>
       </div>
     </div>
+    </>
   );
 };
 
