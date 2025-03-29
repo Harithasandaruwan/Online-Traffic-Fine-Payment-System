@@ -1,36 +1,96 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../User Tools/authStore";
+import { calculateGenderAndDOB } from "../User Tools/NicCalculator";
+import Prediction from "../User Tools/Profile-tool/Prediction"; // Import Prediction component
+import axios from "axios";
 
 const Profile = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("profile");
+  const { logout, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+  const { deleteAccount } = useAuthStore(); //not working
 
-  const logout = () => {
-    alert("You have been logged out.");
-    window.location.href = "/login";
+  //Nic calculate
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/auth/check-auth",
+          {
+            withCredentials: true,
+          }
+        );
+
+        const userData = response.data.user;
+        setUser(userData);
+
+        if (userData.NICNumber) {
+          const { gender, dob } = calculateGenderAndDOB(userData.NICNumber);
+          setGender(gender);
+          setDob(dob);
+        }
+      } catch (err) {
+        setError("Failed to fetch user data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login"); // Redirect to login page after logout
   };
 
-  const deleteAccount = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      alert("Your account has been deleted.");
-      window.location.href = "/signup";
+  //not working
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      try {
+        await deleteAccount(); // Ensure this function makes an API request
+        alert("Account deleted successfully.");
+        navigate("/signup");
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("Error deleting account. Please try again.");
+      }
     }
-  };
+  };  
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="container mx-auto mt-8 p-4">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Left Profile Section */}
         <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md text-center">
+
           <img
-            src="profile.jpg"
+            src={
+              user.profilePicture
+                ? `http://localhost:3000${user.profilePicture}`
+                : `/Profile_picture/${
+                    gender === "Male"
+                      ? "male-default.png"
+                      : "female-default.png"
+                  }`
+            }
             alt="User"
             className="w-24 h-24 mx-auto rounded-full border-4 border-blue-500"
           />
-          <h5 className="text-xl font-bold mt-4">John Doe</h5>
+
+          <h5 className="text-xl font-bold mt-4">
+            {user.firstName} {user.lastName}
+          </h5>
           <p className="text-gray-600">Sri Lanka</p>
           <hr className="my-4" />
           <p>
@@ -47,7 +107,9 @@ const Profile = () => {
         {/* Right Content Section */}
         <div className="w-full md:w-2/3">
           <h2 className="text-2xl font-bold">Profile Dashboard</h2>
-          <p className="text-black">Your driving insights and account details.</p>
+          <p className="text-black">
+            Your driving insights and account details.
+          </p>
 
           <div className="flex mt-4 border-b">
             {["profile", "prediction", "settings"].map((tab) => (
@@ -72,16 +134,18 @@ const Profile = () => {
                 <table className="w-full mt-2 border-collapse border border-black">
                   <tbody>
                     {[
-                      ["First Name", "John"],
-                      ["Last Name", "Doe"],
-                      ["Email", "johndoe@example.com"],
-                      ["Phone", "+94 71 234 5678"],
-                      ["NIC Number", "2222222222"],
-                      ["Gender", "Male"],
-                      ["Address", "Colombo, Sri Lanka"],
+                      ["First Name", user.firstName],
+                      ["Last Name", user.lastName],
+                      ["Email", user.email],
+                      ["Phone", user.phoneNumber],
+                      ["NIC Number", user.NICNumber],
+                      ["Gender", gender || "Not Calculated"],
+                      ["Date of Birth", dob || "Not Calculated"],
                     ].map(([label, value], index) => (
                       <tr key={index} className="border-b border-black">
-                        <th className="p-2 text-left font-semibold border border-black">{label}</th>
+                        <th className="p-2 text-left font-semibold border border-black">
+                          {label}
+                        </th>
                         <td className="p-2 border border-black">{value}</td>
                       </tr>
                     ))}
@@ -95,60 +159,22 @@ const Profile = () => {
               </div>
             )}
 
-            {activeTab === "prediction" && (
-              <div>
-                <h5 className="text-lg font-bold">Violation Prediction</h5>
-                <p>
-                  Based on your driving history, the system predicts possible
-                  violations and risk level.
-                </p>
-                <table className="w-full mt-2 border-collapse border border-black">
-                  <tbody>
-                    <tr className="border-b border-black">
-                      <th className="p-2 text-left font-semibold border border-black">
-                        Future Risk Level
-                      </th>
-                      <td className="p-2 border border-black">
-                        <span className="px-3 py-1 rounded-lg bg-yellow-500 text-black">
-                          Medium
-                        </span>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-black">
-                      <th className="p-2 text-left font-semibold border border-black">
-                        Predicted Violations
-                      </th>
-                      <td className="p-2 border border-black">
-                        Speeding, Traffic Signal Violation
-                      </td>
-                    </tr>
-                    <tr>
-                      <th className="p-2 text-left font-semibold border border-black">
-                        Suggestions
-                      </th>
-                      <td className="p-2 border border-black">
-                        Reduce speed in urban areas and follow traffic signals
-                        carefully.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
+            {activeTab === "prediction" && <Prediction />}
 
             {activeTab === "settings" && (
               <div>
                 <h5 className="text-lg font-bold">Settings</h5>
                 <p>Manage your account settings here.</p>
                 <button
+                  onClick={handleLogout}
+                  disabled={isLoading}
                   className="bg-gray-500 text-white px-4 py-2 rounded-lg w-full my-2"
-                  onClick={logout}
                 >
-                  Logout
+                  {isLoading ? "Logging Out..." : "Logout"}
                 </button>
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-lg w-full"
-                  onClick={deleteAccount}
+                  onClick={handleDeleteAccount}
                 >
                   Delete Account
                 </button>

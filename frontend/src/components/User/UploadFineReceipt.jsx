@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UploadCloud, AlertCircle } from "lucide-react";
 import sectionsData from "../User Tools/sectionsData";
+import axios from "axios";
 
 const UploadFineReceipt = () => {
   const [vehicleNumber, setVehicleNumber] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
+  const [issueDate, setIssueDate] = useState("");
   const [section, setSection] = useState("");
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
@@ -14,33 +16,15 @@ const UploadFineReceipt = () => {
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      const fileSize = selectedFile.size / 1024 / 1024;
-      const fileType = selectedFile.type;
-
-      if (fileSize > 2) {
-        setMessage("File size exceeds 2MB limit.");
-        setMessageType("error");
-        setFile(null);
-        return;
-      }
-
-      if (!["image/jpeg", "image/png", "application/pdf"].includes(fileType)) {
-        setMessage("Invalid file type. Only .jpg, .png, .pdf are allowed.");
-        setMessageType("error");
-        setFile(null);
-        return;
-      }
-
-      setMessage("File uploaded successfully.");
-      setMessageType("success");
-      setFile(selectedFile);
-    }
+    const formdata = new FormData();
+    formdata.append('file', file);
+    axios.post('http://localhost:3000/upload', formdata)
+    .then(res => console.log(res))
+    .catch(err => console.log(err))
   };
 
   const submitFineProof = () => {
-    if (!vehicleNumber || !licenseNumber || !section || !file) {
+    if (!vehicleNumber || !licenseNumber || !section || !issueDate || !file) {
       setMessage("Please fill all the required fields and upload the fine receipt.");
       setMessageType("error");
       return;
@@ -87,6 +71,16 @@ const UploadFineReceipt = () => {
               placeholder="L123456789"
               value={licenseNumber}
               onChange={(e) => setLicenseNumber(e.target.value.toUpperCase())}
+            />
+          </div>
+
+          <div className="mt-4">
+            <label className="font-semibold block mb-1 text-gray-300">Issue Date:</label>
+            <input
+              type="date"
+              className="w-full p-3 border border-gray-600 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#C68EFD]"
+              value={issueDate}
+              onChange={(e) => setIssueDate(e.target.value)}
             />
           </div>
 

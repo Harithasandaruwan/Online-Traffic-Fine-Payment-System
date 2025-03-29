@@ -8,6 +8,7 @@ import Profile from "./components/User/Profile";
 import Update from "./components/User/Update";
 import UploadFineReceipt from "./components/User/UploadFineReceipt";
 import ForgotPassword from "./components/User/ForgotPasswordPage";
+import Upload from "./components/User/getuser";
 
 //Admin Management System
 import AdminLogin from "./components/Admin/AdminLogin";
@@ -19,7 +20,7 @@ import UserMonitoring from "./components/Admin/UserMonitoring";
 
 //Prediction management System
 import GetStart from "./components/Predication/GetStart";
-import About from "./components/Predication/About"
+import About from "./components/Predication/About";
 import Services from "./components/Predication/Services";
 
 function App() {
@@ -39,9 +40,11 @@ function App() {
             : "min-h-screen bg-gradient-to-b from-purple-800 via-purple-600 to-purple-300 flex items-center justify-center relative overflow-hidden" // Dark Cosmic Theme (User)
         }`}
     >
-      <FloatingShape />
-      <Routes>
+      <div className="absolute top-0 left-0 w-full h-full -z-10">
+        <FloatingShape />
+      </div>
 
+      <Routes>
         {/* User Routes */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
@@ -49,6 +52,7 @@ function App() {
         <Route path="/update" element={<Update />} />
         <Route path="/upload-fine-receipt" element={<UploadFineReceipt />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/up" element={<Upload />} />
 
         {/* Admin Routes */}
         <Route path="/admin/register" element={<AdminRegister />} />
@@ -62,7 +66,6 @@ function App() {
         <Route path="/" element={<GetStart />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
-
       </Routes>
     </div>
   );
