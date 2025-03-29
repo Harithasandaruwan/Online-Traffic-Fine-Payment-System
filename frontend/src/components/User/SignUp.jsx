@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import PasswordStrengthMeter from "../User Tools/PasswordStrengthMeter";
 import { useAuthStore } from "../User Tools/authStore";
 
-const SignUp = () => {
+const SignUpPage = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,32 +21,31 @@ const SignUp = () => {
     e.preventDefault();
 
     try {
-      await signup(
-        email,
-        password,
-        firstName,
-        lastName,
-        Number(phoneNumber),
-        Number(NICNumber)
-      );
-      navigate("/verify-email");
+		await signup(
+			firstName,
+			lastName,
+			email,
+			phoneNumber,
+			NICNumber,
+			password
+		  );
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
-			overflow-hidden"
+      className="max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden"
     >
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 via-[#C68EFD] to-emerald-500 text-transparent bg-clip-text">
+      <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 via-[#C68EFD] to-emerald-500 text-transparent bg-clip-text">
           Create Account
         </h2>
-
         <form onSubmit={handleSignUp}>
           <Input
             icon={User}
@@ -74,32 +73,14 @@ const SignUp = () => {
             type="tel"
             placeholder="Phone Number"
             value={phoneNumber}
-            onChange={(e) => {
-				let onlyNumbers = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
-				if (onlyNumbers.length > 10) {
-				  onlyNumbers = onlyNumbers.slice(0, 10); // Restrict to 10 digits
-				}
-				setPhoneNumber(onlyNumbers);
-			  }}
-			  maxLength={10} // Prevents typing more than 10 digits
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
           <Input
             icon={IdCard}
             type="text"
             placeholder="NIC Number"
             value={NICNumber}
-            onChange={(e) => {
-				let nicValue = e.target.value.replace(/[^0-9vV]/g, ""); // Allow only numbers and 'v'/'V'
-				
-				// Ensure 'v' or 'V' is only at the end
-				if (nicValue.includes("v") || nicValue.includes("V")) {
-				  nicValue = nicValue.replace(/v/gi, ""); // Remove all 'v' or 'V'
-				  nicValue = nicValue + "V"; // Add 'V' at the end
-				}
-			
-				setNICNumber(nicValue);
-			  }}
-			  minLength={12} // Minimum 12 characters
+            onChange={(e) => setNICNumber(e.target.value)}
           />
           <Input
             icon={Lock}
@@ -110,19 +91,15 @@ const SignUp = () => {
           />
           {error && <p className="text-red-500 font-semibold mt-2">{error}</p>}
           <PasswordStrengthMeter password={password} />
-
           <motion.button
-            className="mt-5 w-full py-3 px-4 bg-[#C68EFD] text-white 
-						font-bold rounded-lg shadow-lg hover:bg-[#B07CE5] 
-						focus:outline-none focus:ring-2 focus:ring-[#C68EFD] focus:ring-offset-2
-						 focus:ring-offset-gray-900 transition duration-200"
+            className="mt-5 w-full py-3 px-4 bg-[#C68EFD] text-white font-bold rounded-lg shadow-lg hover:bg-[#B07CE5] focus:outline-none focus:ring-2 focus:ring-[#C68EFD] focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader className=" animate-spin mx-auto" size={24} />
+              <Loader className="animate-spin mx-auto" size={24} />
             ) : (
               "Sign Up"
             )}
@@ -141,4 +118,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpPage;

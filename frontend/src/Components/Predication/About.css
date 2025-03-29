@@ -1,0 +1,50 @@
+/* Set the background image */
+.background-container {
+    background-image: url('/prediction_image/6.jpeg'); /* Path to your image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 20px;
+  }
+  
+  /* Align the content */
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    padding: 20px;
+  }
+  
+  /* Apply color to p1 to p5 classnames */
+  .p1, .p2, .p3, .p4, .p5 {
+    color: #5a7ee9;
+    margin-bottom: 20px; /* Add margin for better spacing */
+  }
+  
+  /* Adjust the paragraph styles inside p1 to p5 */
+  .p1 p, .p2 p, .p3 p, .p4 p, .p5 p {
+    font-size: 16px; /* Adjust font size if necessary */
+    line-height: 1.6; /* Adjust line height for readability */
+  }
+  
+  /* Specific styling for the history, British period, etc. */
+  .info2, .info3, .info4, .info5 {
+    font-size: 14px;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    color: black;
+  }
+  
+  .header {
+    text-align: center;
+    background: linear-gradient(135deg, #6a0dad, #8e44ad);
+    padding: 20px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  

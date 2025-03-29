@@ -15,25 +15,19 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const { signup, error, isLoading } = useAuthStore();
+  const { updateProfile, error, isLoading } = useAuthStore();
 
-  const handleSignUp = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-
+  
     try {
-      await signup(
-        email,
-        password,
-        firstName,
-        lastName,
-        Number(phoneNumber),
-        Number(NICNumber)
-      );
-      navigate("/verify-email");
+      await updateProfile(firstName, lastName, email, phoneNumber, NICNumber);
+      navigate("/profile");
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -47,7 +41,7 @@ const SignUp = () => {
           Update Account
         </h2>
 
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={handleUpdate}>
           <Input
             icon={User}
             type="text"

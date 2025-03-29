@@ -19,13 +19,13 @@ const userSchema = new mongoose.Schema({
     },
 
     phoneNumber: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
 
     NICNumber: {
-        type: Number,
+        type: String,
         required: true,
         unique: true
     },
@@ -36,8 +36,8 @@ const userSchema = new mongoose.Schema({
     },
 
     lastLogin: {
-        type: Boolean,
-        default: false
+        type: Date,
+        default: Date.now
     },
 
     isVerified: {
