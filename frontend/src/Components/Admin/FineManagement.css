@@ -1,180 +1,172 @@
 .fine-management {
   min-height: 100vh;
   background-color: #f5f5f5;
+  padding: 20px;
 }
 
 .fine-management-content {
-  padding: 6rem 2rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 .fine-management-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.logo{
-  width: 65px;
-}
-
-.fine-management-header h1 {
-  color: #8A2BE2;
-  margin: 0;
+  margin-bottom: 20px;
 }
 
 .fine-management-filters {
   display: flex;
-  gap: 1rem;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .fine-management-filter,
 .fine-management-search {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.fine-management-filter {
-  min-width: 150px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
 }
 
 .fine-management-search {
-  min-width: 300px;
-}
-
-.fine-management-filter:focus,
-.fine-management-search:focus {
-  outline: none;
-  border-color: #8A2BE2;
-  box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.1);
+  flex: 1;
 }
 
 .fine-management-table-container {
   background: white;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(138, 43, 226, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
 }
 
 .fine-management-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 1000px;
 }
 
 .fine-management-table th,
 .fine-management-table td {
-  padding: 1rem;
+  padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #eee;
 }
 
 .fine-management-table th {
   background-color: #f8f9fa;
-  color: #4a4a4a;
   font-weight: 600;
+  color: #333;
 }
 
 .fine-management-table tr:hover {
   background-color: #f8f9fa;
 }
 
+.fine-image-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.fine-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .fine-management-status {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
   font-weight: 500;
 }
 
 .fine-management-status.pending {
-  background-color: #fff3e0;
-  color: #ef6c00;
+  background-color: #fff3cd;
+  color: #856404;
 }
 
 .fine-management-status.approved {
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .fine-management-status.rejected {
-  background-color: #ffebee;
-  color: #c62828;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .fine-management-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .fine-management-approve-btn,
 .fine-management-reject-btn,
 .fine-management-report-btn {
-  padding: 0.5rem 1rem;
+  padding: 6px 12px;
   border: none;
-  border-radius: 6px;
-  font-weight: 500;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
 .fine-management-approve-btn {
-  background-color: #2e7d32;
+  background-color: #28a745;
   color: white;
-}
-
-.fine-management-approve-btn:hover {
-  background-color: #1b5e20;
 }
 
 .fine-management-reject-btn {
-  background-color: #c62828;
+  background-color: #dc3545;
   color: white;
-}
-
-.fine-management-reject-btn:hover {
-  background-color: #b71c1c;
 }
 
 .fine-management-report-btn {
-  background-color: #8A2BE2;
+  background-color: #6a0dad;
   color: white;
 }
 
+.fine-management-approve-btn:hover,
+.fine-management-reject-btn:hover,
 .fine-management-report-btn:hover {
-  background-color: #7a1ad2;
+  opacity: 0.9;
 }
 
-.fine-management-delete-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.fine-management-delete-btn:hover {
-  background-color: #c82333;
-}
-
-.fine-management-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-size: 1.2rem;
-  color: #8A2BE2;
-}
-
-.fine-management-no-data {
+.no-fines {
   text-align: center;
-  padding: 2rem;
-  color: #666;
-  font-style: italic;
+  color: #6c757d;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .fine-management-filters {
+    flex-direction: column;
+  }
+
+  .fine-management-table {
+    font-size: 14px;
+  }
+
+  .fine-management-actions {
+    flex-direction: column;
+  }
+
+  .fine-management-approve-btn,
+  .fine-management-reject-btn,
+  .fine-management-report-btn {
+    width: 100%;
+  }
+
+  .fine-image-container {
+    width: 40px;
+    height: 40px;
+  }
 } 

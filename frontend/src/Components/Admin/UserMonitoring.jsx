@@ -1,155 +1,97 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "./Navbar";
 import "./UserMonitoring.css";
 
 const UserMonitoring = () => {
-  const [activeUsers, setActiveUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [userActivities, setUserActivities] = useState([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
-
-  // Mock data for testing
-  const mockActiveUsers = [
-    { id: 1, name: "John Doe", email: "john@example.com", lastActive: "2 minutes ago" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", lastActive: "5 minutes ago" },
-    { id: 3, name: "Mike Johnson", email: "mike@example.com", lastActive: "10 minutes ago" },
-  ];
-
-  const mockUserActivities = [
-    { id: 1, userId: 1, action: "Payment", details: "Paid fine #123", timestamp: "2024-03-20 10:30 AM" },
-    { id: 2, userId: 1, action: "Profile Update", details: "Updated contact information", timestamp: "2024-03-20 09:15 AM" },
-    { id: 3, userId: 2, action: "Login", details: "User logged in from Chrome", timestamp: "2024-03-20 10:25 AM" },
-  ];
+  const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    // Simulate fetching active users
-    const fetchActiveUsers = () => {
-      setActiveUsers(mockActiveUsers);
-      setLoading(false);
-    };
-
-    fetchActiveUsers();
-    // Set up polling every 30 seconds
-    const interval = setInterval(fetchActiveUsers, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (selectedUser) {
-      // Simulate fetching user activities
-      const fetchUserActivities = () => {
-        const filteredActivities = mockUserActivities.filter(
-          activity => activity.userId === selectedUser.id
-        );
-        setUserActivities(filteredActivities);
-      };
-
-      fetchUserActivities();
+    // Check if admin is authenticated
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate("/admin/login");
+      return;
     }
-  }, [selectedUser]);
+    fetchUsers();
+  }, [navigate]);
 
-  const handleUserClick = (user) => {
-    setSelectedUser(user);
-  };
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3000/api/admin/users", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };  
 
-  const filteredActivities = userActivities.filter(activity => {
-    if (filter === "all") return true;
-    return activity.action.toLowerCase() === filter.toLowerCase();
-  });
+  const filteredUsers = users.filter((user) =>
+    Object.values(user).some((value) =>
+      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  if (loading) {
+    return <div className="user-monitoring-loading">Loading...</div>;
+  }
 
   return (
     <div className="user-monitoring">
       <Navbar />
       <div className="user-monitoring-content">
-        <h1>User Monitoring</h1>
-        
-        {/* Active Users Section */}
-        <div className="active-users-section">
-          <h2>Active Users</h2>
-          <div className="active-users-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Last Active</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {activeUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.lastActive}</td>
-                    <td>
-                      <button 
-                        className="view-activities-btn"
-                        onClick={() => handleUserClick(user)}
-                      >
-                        View Activities
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="user-monitoring-header">
+          <h2>User Monitoring</h2>
+          <div className="user-monitoring-search">
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
-        {/* User Activities Section */}
-        {selectedUser && (
-          <div className="user-activities-section">
-            <h2>Activities for {selectedUser.name}</h2>
-            <div className="activity-filters">
-              <button 
-                className={`filter-btn ${filter === "all" ? "active" : ""}`}
-                onClick={() => setFilter("all")}
-              >
-                All
-              </button>
-              <button 
-                className={`filter-btn ${filter === "payment" ? "active" : ""}`}
-                onClick={() => setFilter("payment")}
-              >
-                Payments
-              </button>
-              <button 
-                className={`filter-btn ${filter === "profile" ? "active" : ""}`}
-                onClick={() => setFilter("profile")}
-              >
-                Profile Updates
-              </button>
-              <button 
-                className={`filter-btn ${filter === "login" ? "active" : ""}`}
-                onClick={() => setFilter("login")}
-              >
-                Logins
-              </button>
-            </div>
-            <div className="activities-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Action</th>
-                    <th>Details</th>
-                    <th>Timestamp</th>
+        <div className="user-monitoring-table-container">
+          <table className="user-monitoring-table">
+            <thead>
+              <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>NIC Number</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.firstName}</td>
+                    <td>{user.lastName}</td>
+                    <td>{user.email}</td>
+                    <td>{user.phoneNumber}</td>
+                    <td>{user.NICNumber}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {filteredActivities.map((activity) => (
-                    <tr key={activity.id}>
-                      <td>{activity.action}</td>
-                      <td>{activity.details}</td>
-                      <td>{activity.timestamp}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="no-users">
+                    No users found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

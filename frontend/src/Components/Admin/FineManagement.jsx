@@ -24,63 +24,47 @@ const FineManagement = () => {
   const fetchFines = async () => {
     try {
       setLoading(true);
-      // For testing, using mock data until backend is ready
-      const mockData = [
-        {
-          id: 1,
-          driverName: "John Doe",
-          licenseNumber: "ABC123",
-          fineType: "Speeding",
-          amount: 5000,
-          date: "2024-03-20",
-          location: "Colombo",
-          status: "Pending"
-        },
-        {
-          id: 2,
-          driverName: "Jane Smith",
-          licenseNumber: "XYZ789",
-          fineType: "Parking Violation",
-          amount: 3000,
-          date: "2024-03-19",
-          location: "Kandy",
-          status: "Approved"
-        }
-      ];
-      setFines(mockData);
-      // Uncomment when backend is ready
-      // const response = await axios.get('/api/admin/fines', {
-      //   headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
-      // });
-      // setFines(response.data);
+      const response = await axios.get('/api/admin/fines', {
+        headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
+      });
+  
+      console.log("Fetched fines data:", response.data); // Debugging log
+  
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        setFines(response.data);
+      } else {
+        setFines([]); // Set to empty array if response is not valid
+      }
     } catch (error) {
       console.error("Error fetching fines:", error);
+      setFines([]); // Ensure state is set even on error
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   const filteredFines = fines.filter((fine) => {
     const matchesFilter =
       filter === "all" || fine.status.toLowerCase() === filter.toLowerCase();
     const matchesSearch =
-      fine.driverName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      fine.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      fine.vehicleNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fine.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fine.userName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
   const handleStatusChange = async (fineId, newStatus) => {
     try {
-      // For testing, just update the local state
       setFines(fines.map(fine => 
-        fine.id === fineId ? { ...fine, status: newStatus } : fine
+        fine._id === fineId ? { ...fine, status: newStatus } : fine
       ));
-      // Uncomment when backend is ready
-      // await axios.put(`/api/admin/fines/${fineId}`, 
-      //   { status: newStatus },
-      //   { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
-      // );
-      // fetchFines();
+      await axios.put(`/api/admin/fines/${fineId}`, 
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      fetchFines();
     } catch (error) {
       console.error("Error updating fine status:", error);
     }
@@ -88,30 +72,32 @@ const FineManagement = () => {
 
   const handleGenerateReport = async (fineId) => {
     try {
-      // For testing, just show an alert
-      alert("Report generated and sent successfully!");
-      // Uncomment when backend is ready
-      // await axios.post(`/api/admin/fines/${fineId}/report`, {}, {
-      //   headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
-      // });
+      const reportData = {
+        fineId: fineId,
+        userName: fines.find(f => f._id === fineId)?.userName,
+        vehicleNumber: fines.find(f => f._id === fineId)?.vehicleNumber,
+        licenseNumber: fines.find(f => f._id === fineId)?.licenseNumber,
+        issueDate: fines.find(f => f._id === fineId)?.issueDate,
+        section: fines.find(f => f._id === fineId)?.section,
+        status: "Approved",
+        generatedDate: new Date().toISOString()
+      };
+
+      const reportString = JSON.stringify(reportData, null, 2);
+      const blob = new Blob([reportString], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fine_report_${fineId}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      alert("Report downloaded successfully!");
     } catch (error) {
       console.error("Error generating report:", error);
-    }
-  };
-
-  const handleDeleteFine = async (fineId) => {
-    if (window.confirm("Are you sure you want to delete this fine?")) {
-      try {
-        // For testing, just update the local state
-        setFines(fines.filter(fine => fine.id !== fineId));
-        // Uncomment when backend is ready
-        // await axios.delete(`/api/admin/fines/${fineId}`, {
-        //   headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
-        // });
-        // fetchFines();
-      } catch (error) {
-        console.error("Error deleting fine:", error);
-      }
+      alert("Error generating report. Please try again.");
     }
   };
 
@@ -137,7 +123,7 @@ const FineManagement = () => {
             </select>
             <input
               type="text"
-              placeholder="Search by driver name or license number..."
+              placeholder="Search by name, vehicle number or license number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="fine-management-search"
@@ -149,13 +135,12 @@ const FineManagement = () => {
           <table className="fine-management-table">
             <thead>
               <tr>
-                <th>Fine ID</th>
-                <th>Driver Name</th>
+                <th>Fine Image</th>
+                <th>User Name</th>
+                <th>Vehicle Number</th>
                 <th>License Number</th>
-                <th>Fine Type</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Location</th>
+                <th>Issue Date</th>
+                <th>Section</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
@@ -163,14 +148,21 @@ const FineManagement = () => {
             <tbody>
               {filteredFines.length > 0 ? (
                 filteredFines.map((fine) => (
-                  <tr key={fine.id}>
-                    <td>{fine.id}</td>
-                    <td>{fine.driverName}</td>
+                  <tr key={fine._id}>
+                    <td>
+                      <div className="fine-image-container">
+                        <img 
+                          src={fine.fileUrl} 
+                          alt="Fine Image" 
+                          className="fine-image"
+                        />
+                      </div>
+                    </td>
+                    <td>{fine.userName}</td>
+                    <td>{fine.vehicleNumber}</td>
                     <td>{fine.licenseNumber}</td>
-                    <td>{fine.fineType}</td>
-                    <td>Rs. {fine.amount}</td>
-                    <td>{fine.date}</td>
-                    <td>{fine.location}</td>
+                    <td>{new Date(fine.issueDate).toLocaleDateString()}</td>
+                    <td>{fine.section}</td>
                     <td>
                       <span
                         className={`fine-management-status ${fine.status.toLowerCase()}`}
@@ -184,13 +176,13 @@ const FineManagement = () => {
                           <>
                             <button
                               className="fine-management-approve-btn"
-                              onClick={() => handleStatusChange(fine.id, "Approved")}
+                              onClick={() => handleStatusChange(fine._id, "Approved")}
                             >
                               Approve
                             </button>
                             <button
                               className="fine-management-reject-btn"
-                              onClick={() => handleStatusChange(fine.id, "Rejected")}
+                              onClick={() => handleStatusChange(fine._id, "Rejected")}
                             >
                               Reject
                             </button>
@@ -199,24 +191,18 @@ const FineManagement = () => {
                         {fine.status === "Approved" && (
                           <button
                             className="fine-management-report-btn"
-                            onClick={() => handleGenerateReport(fine.id)}
+                            onClick={() => handleGenerateReport(fine._id)}
                           >
-                            Generate Report
+                            Download Report
                           </button>
                         )}
-                        <button
-                          className="fine-management-delete-btn"
-                          onClick={() => handleDeleteFine(fine.id)}
-                        >
-                          Delete
-                        </button>
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" className="fine-management-no-data">
+                  <td colSpan="8" className="no-fines">
                     No fines found
                   </td>
                 </tr>
@@ -229,4 +215,4 @@ const FineManagement = () => {
   );
 };
 
-export default FineManagement; 
+export default FineManagement;

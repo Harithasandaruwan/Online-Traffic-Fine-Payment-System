@@ -18,8 +18,8 @@ app.use((req, res, next) => {
 
 // CORS configuration to allow requests from your frontend origins
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
-  credentials: true,
+  origin: "http://localhost:5176",  // Change to match your frontend
+  credentials: true, // Allow cookies & authentication headers
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
