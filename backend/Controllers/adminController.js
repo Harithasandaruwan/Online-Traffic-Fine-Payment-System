@@ -140,3 +140,18 @@ export const deleteAdmin = async (req, res) => {
     res.status(500).json({ message: "Error deleting admin", error: error.message });
   }
 };
+
+export const getAdminProfile = async (req, res) => {
+  try {
+    const admin = await Admin.findById(req.admin.id).select("-password"); // Exclude password for security
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.json(admin);
+  } catch (error) {
+    console.error("Error fetching admin profile:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

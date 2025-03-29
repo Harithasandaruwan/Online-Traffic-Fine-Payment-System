@@ -1,5 +1,5 @@
 import express from "express";
-import { registerAdmin, loginAdmin, getAllAdmins, updateAdmin, deleteAdmin } from "../Controllers/adminController.js";
+import { registerAdmin, loginAdmin, getAllAdmins, updateAdmin, deleteAdmin, getAdminProfile } from "../Controllers/adminController.js";
 import { check } from "express-validator";
 import { protectAdmin } from "../middleware/authMiddleware.js";
 
@@ -27,5 +27,7 @@ router.post("/login", loginAdmin);
 router.get("/", protectAdmin, getAllAdmins);
 router.put("/:id", protectAdmin, updateAdmin);
 router.delete("/:id", protectAdmin, deleteAdmin);
+
+router.get("/profile", protectAdmin, getAdminProfile);
 
 export default router;

@@ -13,7 +13,7 @@ const AdminProfile = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
-  };
+  }; 
 
   return (
     <>

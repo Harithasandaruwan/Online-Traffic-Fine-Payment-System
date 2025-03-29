@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Pencil, Trash2, X, Check, UserCog, Search } from "lucide-react";
+import { Pencil, Trash2, UserCog, Search } from "lucide-react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../User Tools/authStore";
 
 const AdminManagement = () => {
@@ -17,23 +18,23 @@ const AdminManagement = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { token, user } = useAuthStore();
+  const navigate = useNavigate();
 
-  // Load admins from API
-  useEffect(() => {
-    if (token) {
-      fetchAdmins();
-    }
-  }, [token]);
+  // Get token from localStorage
+  const token = localStorage.getItem("adminToken");
 
+  // Fetch all admins
   const fetchAdmins = async () => {
+    if (!token) {
+      console.error("No token found");
+      navigate("/login");
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/admin", {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      const response = await axios.get("http://localhost:3000/api/admin", {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setAdmins(response.data);
       setError("");
@@ -45,6 +46,11 @@ const AdminManagement = () => {
     }
   };
 
+  // Load admins on component mount
+  useEffect(() => {
+    fetchAdmins();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -55,26 +61,19 @@ const AdminManagement = () => {
 
   const handleAddAdmin = async (e) => {
     e.preventDefault();
+    if (!token) return navigate("/login");
+
     try {
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/admin/register", formData, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      await axios.post("http://localhost:3000/api/admin/register", formData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        nic: "",
-        mobile: ""
-      });
+
+      setFormData({ name: "", email: "", password: "", nic: "", mobile: "" });
       fetchAdmins();
       setError("");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to add admin");
-      console.error("Add error:", err);
     } finally {
       setLoading(false);
     }
@@ -82,77 +81,57 @@ const AdminManagement = () => {
 
   const handleEdit = (admin) => {
     setEditingAdmin(admin._id);
-    setFormData({
-      name: admin.name,
-      email: admin.email,
-      nic: admin.nic,
-      mobile: admin.mobile,
-      password: "" // Clear password for security
-    });
+    setFormData({ name: admin.name, email: admin.email, nic: admin.nic, mobile: admin.mobile, password: "" });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!token) return navigate("/login");
+
     try {
       setLoading(true);
-      const response = await axios.put(`http://localhost:5000/api/admin/${editingAdmin}`, formData, {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+      await axios.put(`http://localhost:3000/api/admin/${editingAdmin}`, formData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
+
       setEditingAdmin(null);
-      setFormData({
-        name: "",
-        email: "",
-        password: "",
-        nic: "",
-        mobile: ""
-      });
+      setFormData({ name: "", email: "", password: "", nic: "", mobile: "" });
       fetchAdmins();
       setError("");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to update admin");
-      console.error("Update error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (adminId) => {
+    if (!token) return navigate("/login");
+  
     if (window.confirm("Are you sure you want to delete this admin?")) {
       try {
         setLoading(true);
-        const response = await axios.delete(`http://localhost:5000/api/admin/${adminId}`, {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        await axios.delete(`http://localhost:3000/api/admin/${adminId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        fetchAdmins();
-        setError("");
+  
+        fetchAdmins();  // Refresh the list after successful deletion
+        setError("");   // Clear any previous errors
       } catch (err) {
         setError(err.response?.data?.message || "Failed to delete admin");
-        console.error("Delete error:", err);
       } finally {
         setLoading(false);
       }
     }
-  };
+  };  
 
   const handleCancelEdit = () => {
     setEditingAdmin(null);
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      nic: "",
-      mobile: ""
-    });
+    setFormData({ name: "", email: "", password: "", nic: "", mobile: "" });
   };
 
   // Filter admins based on search query
-  const filteredAdmins = admins.filter(admin => 
+  const filteredAdmins = admins.filter(admin =>
     admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     admin.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -176,14 +155,10 @@ const AdminManagement = () => {
         </div>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-500 text-white rounded-lg">
-          {error}
-        </div>
-      )}
+      {error && <div className="mb-4 p-3 bg-red-500 text-white rounded-lg">{error}</div>}
 
-      {/* Existing Admins Table */}
-      <div className="mb-8 overflow-x-auto relative z-50">
+      {/* Admins Table */}
+      <div className="mb-8 overflow-x-auto">
         <table className="w-full text-white">
           <thead className="bg-gray-700">
             <tr>
@@ -196,13 +171,9 @@ const AdminManagement = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="5" className="text-center py-4">Loading...</td>
-              </tr>
+              <tr><td colSpan="5" className="text-center py-4">Loading...</td></tr>
             ) : filteredAdmins.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="text-center py-4">No admins found</td>
-              </tr>
+              <tr><td colSpan="5" className="text-center py-4">No admins found</td></tr>
             ) : (
               filteredAdmins.map(admin => (
                 <tr key={admin._id} className="border-b border-gray-700 hover:bg-gray-700/50">
@@ -211,20 +182,12 @@ const AdminManagement = () => {
                   <td className="px-4 py-3">{admin.nic}</td>
                   <td className="px-4 py-3">{admin.mobile}</td>
                   <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center space-x-2">
-                      <button
-                        onClick={() => handleEdit(admin)}
-                        className="p-1 text-blue-400 hover:text-blue-300 relative z-50"
-                      >
-                        <Pencil className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(admin._id)}
-                        className="p-1 text-red-400 hover:text-red-300 relative z-50"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
+                    <button onClick={() => handleEdit(admin)} className="p-1 text-blue-400 hover:text-blue-300">
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button onClick={() => handleDelete(admin._id)} className="p-1 text-red-400 hover:text-red-300">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
                   </td>
                 </tr>
               ))
@@ -307,4 +270,4 @@ const AdminManagement = () => {
   );
 };
 
-export default AdminManagement; 
+export default AdminManagement;
