@@ -29,13 +29,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration to allow requests from your frontend origins
-app.use(cors({
-  origin: "http://localhost:5176",  // Change to match your frontend
-  credentials: true, // Allow cookies & authentication headers
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// // CORS configuration to allow requests from your frontend origins
+// app.use(cors({
+//   origin: "http://localhost:5176",  // Change to match your frontend
+//   credentials: true, // Allow cookies & authentication headers
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 // Middleware to parse JSON bodies
 app.use(express.json());

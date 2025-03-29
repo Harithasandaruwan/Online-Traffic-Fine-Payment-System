@@ -180,3 +180,20 @@ export const getAllFines = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch fines", error: error.message });
   }
 };
+
+export const updateFineStatus = async (req, res) => {
+  try {
+    const { id } = req.params; // Get fine ID from URL
+    const { status } = req.body; // Get status from request body
+
+    const fine = await FineReceipt.findById(id);
+    if (!fine) return res.status(404).json({ message: "Fine not found" });
+
+    fine.status = status;
+    await fine.save();
+
+    res.status(200).json({ message: "Fine status updated", fine });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};

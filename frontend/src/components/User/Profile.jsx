@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../User Tools/authStore";
 import { calculateGenderAndDOB } from "../User Tools/NicCalculator";
-import Prediction from "../User Tools/Profile-tool/Prediction"; // Import Prediction component
+import Prediction from "../User Tools/Profile-tool/Prediction";
 import axios from "axios";
+import "./Profile.css";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -12,9 +13,8 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { logout, isLoading } = useAuthStore();
   const navigate = useNavigate();
-  const { deleteAccount } = useAuthStore(); //not working
+  const { deleteAccount } = useAuthStore();
 
-  //Nic calculate
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
 
@@ -48,14 +48,13 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate("/login"); // Redirect to login page after logout
+    navigate("/login");
   };
 
-  //not working
   const handleDeleteAccount = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
       try {
-        await deleteAccount(); // Ensure this function makes an API request
+        await deleteAccount();
         alert("Account deleted successfully.");
         navigate("/signup");
       } catch (error) {
@@ -65,15 +64,14 @@ const Profile = () => {
     }
   };  
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
-    <div className="container mx-auto mt-8 p-4">
-      <div className="flex flex-col md:flex-row gap-6">
-        {/* Left Profile Section */}
-        <div className="w-full md:w-1/3 bg-white p-6 rounded-lg shadow-md text-center">
-
+    <div className="container">
+      <div className="profile-layout">
+        {/* Profile Card */}
+        <div className="profile-card">
           <img
             src={
               user.profilePicture
@@ -85,41 +83,38 @@ const Profile = () => {
                   }`
             }
             alt="User"
-            className="w-24 h-24 mx-auto rounded-full border-4 border-blue-500"
+            className="profile-image"
           />
 
-          <h5 className="text-xl font-bold mt-4">
+          <h5 className="profile-name">
             {user.firstName} {user.lastName}
           </h5>
-          <p className="text-gray-600">Sri Lanka</p>
-          <hr className="my-4" />
-          <p>
-            <strong>Risk Score:</strong> 62 / 100
-          </p>
-          <p>
-            <strong>Total Violations:</strong> 12
-          </p>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full mt-4">
-            View Details
-          </button>
+          <p className="profile-location">Sri Lanka</p>
+
+          <div className="profile-stats">
+            <div className="stat-item">
+              <div className="stat-value">62</div>
+              <div className="stat-label">Risk Score</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-value">12</div>
+              <div className="stat-label">Total Violations</div>
+            </div>
+          </div>
+
+          <button className="btn btn-primary">View Details</button>
         </div>
 
-        {/* Right Content Section */}
-        <div className="w-full md:w-2/3">
-          <h2 className="text-2xl font-bold">Profile Dashboard</h2>
-          <p className="text-black">
-            Your driving insights and account details.
-          </p>
+        {/* Content Section */}
+        <div className="content-section">
+          <h2 className="section-title">Profile Dashboard</h2>
+          <p>Your driving insights and account details.</p>
 
-          <div className="flex mt-4 border-b">
+          <div className="tabs">
             {["profile", "prediction", "settings"].map((tab) => (
               <button
                 key={tab}
-                className={`px-4 py-2 ${
-                  activeTab === tab
-                    ? "border-b-2 border-blue-500 text-blue-500"
-                    : "text-gray-500"
-                }`}
+                className={`tab ${activeTab === tab ? "active" : ""}`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -127,11 +122,11 @@ const Profile = () => {
             ))}
           </div>
 
-          <div className="mt-4">
+          <div className="tab-content">
             {activeTab === "profile" && (
               <div>
-                <h5 className="text-lg font-bold">Profile Details</h5>
-                <table className="w-full mt-2 border-collapse border border-black">
+                <h5 className="section-title">Profile Details</h5>
+                <table className="profile-table">
                   <tbody>
                     {[
                       ["First Name", user.firstName],
@@ -142,19 +137,15 @@ const Profile = () => {
                       ["Gender", gender || "Not Calculated"],
                       ["Date of Birth", dob || "Not Calculated"],
                     ].map(([label, value], index) => (
-                      <tr key={index} className="border-b border-black">
-                        <th className="p-2 text-left font-semibold border border-black">
-                          {label}
-                        </th>
-                        <td className="p-2 border border-black">{value}</td>
+                      <tr key={index}>
+                        <th>{label}</th>
+                        <td>{value}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
                 <Link to="/update">
-                  <button className="bg-[#8F87F1] text-white px-4 py-2 rounded-lg w-full mt-4 transition-transform transform hover:scale-105">
-                    Edit Details
-                  </button>
+                  <button className="btn btn-primary">Edit Details</button>
                 </Link>
               </div>
             )}
@@ -163,17 +154,17 @@ const Profile = () => {
 
             {activeTab === "settings" && (
               <div>
-                <h5 className="text-lg font-bold">Settings</h5>
+                <h5 className="section-title">Settings</h5>
                 <p>Manage your account settings here.</p>
                 <button
                   onClick={handleLogout}
                   disabled={isLoading}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-lg w-full my-2"
+                  className="btn btn-primary"
                 >
                   {isLoading ? "Logging Out..." : "Logout"}
                 </button>
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg w-full"
+                  className="btn btn-danger"
                   onClick={handleDeleteAccount}
                 >
                   Delete Account

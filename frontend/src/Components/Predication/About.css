@@ -1,50 +1,155 @@
-/* Set the background image */
+/* Modern CSS for About Page */
+:root {
+  --primary-color: #6a0dad;
+  --secondary-color: #9c27b0;
+  --text-color: #333;
+  --light-bg: #f5f5f5;
+  --white: #ffffff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+/* Header Styles */
+.header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--white);
+  padding: 2rem 0;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.header p {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+  animation: fadeInDown 0.8s ease;
+}
+
+/* Background Container */
 .background-container {
-    background-image: url('/prediction_image/6.jpeg'); /* Path to your image */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    padding: 20px;
+  background-color: var(--light-bg);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+/* Content Container */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Styles */
+.p1, .p2, .p3, .p4, .p5 {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  animation: fadeIn 0.8s ease;
+}
+
+.p1:hover, .p2:hover, .p3:hover, .p4:hover, .p5:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Section Headers */
+.p1 p span, .p2 p span, .p3 p span, .p4 p span, .p5 p span {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.p1 p span::after, .p2 p span::after, .p3 p span::after, .p4 p span::after, .p5 p span::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+}
+
+/* Content Text */
+.info2, .info3, .info4, .info5 {
+  color: var(--text-color);
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  /* Align the content */
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: left;
-    padding: 20px;
+    padding: 0 1rem;
   }
-  
-  /* Apply color to p1 to p5 classnames */
-  .p1, .p2, .p3, .p4, .p5 {
-    color: #5a7ee9;
-    margin-bottom: 20px; /* Add margin for better spacing */
+
+  .header p {
+    font-size: 1.5rem;
   }
-  
-  /* Adjust the paragraph styles inside p1 to p5 */
-  .p1 p, .p2 p, .p3 p, .p4 p, .p5 p {
-    font-size: 16px; /* Adjust font size if necessary */
-    line-height: 1.6; /* Adjust line height for readability */
+
+  .p1 p span, .p2 p span, .p3 p span, .p4 p span, .p5 p span {
+    font-size: 1.5rem;
   }
-  
-  /* Specific styling for the history, British period, etc. */
+
   .info2, .info3, .info4, .info5 {
-    font-size: 14px;
-    margin-top: 10px;
-    margin-left: 20px;
-    margin-right: 20px;
-    color: black;
+    font-size: 1rem;
   }
-  
-  .header {
-    text-align: center;
-    background: linear-gradient(135deg, #6a0dad, #8e44ad);
-    padding: 20px;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
+
+  .p1, .p2, .p3, .p4, .p5 {
+    padding: 1.5rem;
   }
-  
+}
+
+/* Loading State */
+.user-monitoring-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
   

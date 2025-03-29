@@ -53,21 +53,33 @@ const FineManagement = () => {
       fine.userName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
-
+  
+  const updateFineStatus = async (fineId, status) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/api/admin/fines/${fineId}`,
+        { status },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      console.log("Fine updated:", response.data);
+    } catch (error) {
+      console.error("Error updating fine status:", error);
+    }
+  };
+  
   const handleStatusChange = async (fineId, newStatus) => {
     try {
       setFines(fines.map(fine => 
         fine._id === fineId ? { ...fine, status: newStatus } : fine
       ));
-      await axios.put(`/api/admin/fines/${fineId}`, 
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
-      );
+      await updateFineStatus(fineId, newStatus); // ✅ Now it's properly defined
       fetchFines();
     } catch (error) {
       console.error("Error updating fine status:", error);
     }
   };
+  
+  
 
   const handleGenerateReport = async (fineId) => {
     try {
