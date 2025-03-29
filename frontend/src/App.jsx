@@ -12,7 +12,7 @@ import UploadFineReceipt from "./components/User/UploadFineReceipt";
 import AdminLogin from "./Components/Admin/AdminLogin";
 import AdminRegister from "./Components/Admin/AdminRegister";
 import AdminDashboard from "./components/Admin/AdminDashboard";
-import AdminProfile from "./components/Admin/AdminProfile";
+import AdminProfile from "./Components/Admin/AdminProfile";
 import FineManagement from "./components/Admin/FineManagement";
 import UserMonitoring from "./components/Admin/UserMonitoring";
 
