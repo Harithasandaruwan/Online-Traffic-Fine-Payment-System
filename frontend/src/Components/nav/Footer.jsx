@@ -6,7 +6,7 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer-container">
         <div className="footer-logo">
-          <img src="/prediction_image/7.jpeg" alt="Police FPS" className="logo-img" />
+          <img src="./src/assets/2.png" alt="Police FPS" className="logo-img" />
         </div>
         <div className="footer-text">
           <p>© 2025 Online Traffic Fine Payment System. All rights reserved.</p>
