@@ -11,10 +11,10 @@ import ForgotPassword from "./components/User/ForgotPasswordPage";
 import FineDataList from "./components/User/FineDatailList";
 
 //Admin Management System
-import AdminLogin from "./components/Admin/AdminLogin";
-import AdminRegister from "./components/Admin/AdminRegister";
+import AdminLogin from "./Components/Admin/AdminLogin";
+import AdminRegister from "./Components/Admin/AdminRegister";
 import AdminDashboard from "./components/Admin/AdminDashboard";
-import AdminProfile from "./components/Admin/AdminProfile";
+import AdminProfile from "./Components/Admin/AdminProfile";
 import FineManagement from "./components/Admin/FineManagement";
 import UserMonitoring from "./components/Admin/UserMonitoring";
 

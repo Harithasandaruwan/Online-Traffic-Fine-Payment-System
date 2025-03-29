@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { connectDB } from './DB/connectDB.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { connectDB } from './DB/connectDB.js';
 
 // Needed for ES module to use `__dirname`
 const __filename = fileURLToPath(import.meta.url);
@@ -20,28 +20,44 @@ import adminRoutes from './Routes/adminRoutes.js';
 
 dotenv.config();
 
-// Connect to Database first
-connectDB();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors({ origin: "http://localhost:5173", credentials: true }))
+// Global debug middleware to log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] [GLOBAL] ${req.method} ${req.originalUrl}`);
+  next();
+});
 
-app.use(express.json()); //allow us to parse incoming requests:req.body
-app.use(cookieParser()); //allow us to parse incoming cookies
+// // CORS configuration to allow requests from your frontend origins
+// app.use(cors({
+//   origin: "http://localhost:5176",  // Change to match your frontend
+//   credentials: true, // Allow cookies & authentication headers
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"]
+// }));
 
-//User Routes
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+app.use(cookieParser());
+
+//User Routes mounting
 app.use("/api/auth", authRoutes);
 app.use("/api/fine", fineRoutes); // Fine-related routes
 app.use("/fine-images", express.static(path.join(__dirname, "middleware", "ValidationFine_Images")));
 
-//Admin Routes
+//Admin Routes mounting
 app.use("/api/admin", adminRoutes);
 
-// Start Server
-app.listen(PORT, () => {
-    connectDB();
+// Connect to MongoDB and start the server
+connectDB().then(() => {
+  console.log("Connected to MongoDB");
+  app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
+  });
+}).catch((error) => {
+  console.error("Database connection failed:", error);
+  process.exit(1);
 });

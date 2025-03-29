@@ -2,9 +2,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import "../Admin/AdminLogin.css";  // We'll create this CSS file
-
-
+import axios from "axios";
+import "../Admin/AdminLogin.css";
 
 const schema = yup.object().shape({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -23,29 +22,20 @@ const AdminLogin = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Get registered admins from localStorage
-      const registeredAdmins = JSON.parse(localStorage.getItem("registeredAdmins") || "[]");
-      
-      // Check if the credentials match any registered admin
-      const admin = registeredAdmins.find(
-        admin => admin.email === data.email && admin.password === data.password
+      // Call your backend endpoint to login
+      const response = await axios.post(
+        "http://localhost:3000/api/admin/login",
+        data,
+        { withCredentials: true }  // Allow cookies/authentication headers
       );
-
-      if (admin) {
-        localStorage.setItem("adminToken", "mock-token");
-        localStorage.setItem("currentAdmin", JSON.stringify(admin));
-        navigate("/admin/dashboard");
-      } else {
-        alert("Invalid credentials. Please check your email and password.");
-      }
-      
-      // Uncomment when backend is ready
-      // const response = await axios.post('/api/admin/login', data);
-      // localStorage.setItem("adminToken", response.data.token);
-      // navigate("/admin/dashboard");
+            
+      // Save token and admin details from backend
+      localStorage.setItem("adminToken", response.data.token);
+      localStorage.setItem("currentAdmin", JSON.stringify(response.data));
+      navigate("/admin/dashboard");
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Login failed. Please try again.");
+      console.error("Login error:", error.response ? error.response.data : error.message);
+      alert("Invalid credentials. Please check your email and password.");
     }
   };
 
@@ -76,7 +66,9 @@ const AdminLogin = () => {
             Login
           </button>
           <div className="dont-have-account">
-            <p>Don't have an account? <a href="/admin/register">Sign Up</a></p>
+            <p>
+              Don't have an account? <a href="/admin/register">Sign Up</a>
+            </p>
           </div>
         </form>
       </div>

@@ -2,10 +2,12 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../Admin/AdminRegister.css";
 
+// Updated validation schema: using "name" instead of "username"
 const schema = yup.object().shape({
-  username: yup.string().required("Username is required"),
+  name: yup.string().required("Name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
   nic: yup
@@ -30,15 +32,19 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      // For testing, store the registered admin in localStorage
-      const registeredAdmins = JSON.parse(localStorage.getItem("registeredAdmins") || "[]");
-      registeredAdmins.push(data);
-      localStorage.setItem("registeredAdmins", JSON.stringify(registeredAdmins));
+      // Call your backend endpoint to register an admin
+      const response = await axios.post(
+        "http://localhost:3000/api/admin/register",
+        data,
+        { withCredentials: true }  // Allow cookies/authentication headers
+      );      
       
-      alert("Registration successful! Please login.");
-      navigate("/admin/login");
+      if (response.status === 201) {
+        alert("Registration successful! Please login.");
+        navigate("/admin/login");
+      }
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("Registration error:", error.response ? error.response.data : error.message);
       alert("Registration failed. Please try again.");
     }
   };
@@ -49,13 +55,13 @@ const Register = () => {
         <h2 className="admin-register-title">Admin Registration</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="admin-register-form">
           <div>
-            <label className="admin-register-label">Username</label>
+            <label className="admin-register-label">Name</label>
             <input
               type="text"
-              {...register("username")}
+              {...register("name")}
               className="admin-register-input"
             />
-            <p className="admin-register-error">{errors.username?.message}</p>
+            <p className="admin-register-error">{errors.name?.message}</p>
           </div>
           <div>
             <label className="admin-register-label">Email</label>
@@ -89,7 +95,8 @@ const Register = () => {
             <input
               type="text"
               {...register("mobile")}
-              className="admin-register-input"/>
+              className="admin-register-input"
+            />
             <p className="admin-register-error">{errors.mobile?.message}</p>
           </div>
           <button type="submit" className="admin-register-button">
@@ -97,14 +104,13 @@ const Register = () => {
           </button>
           <div>
             <p className="Link-to-login">
-              Already have an Account? <a href="/admin/login">Login</a>
+              Already have an Account?<a href="/admin/login">Login</a>
             </p>
           </div>
         </form>
       </div>
     </div>
   );
-  
 };
 
 export default Register;
