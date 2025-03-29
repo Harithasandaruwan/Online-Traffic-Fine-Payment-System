@@ -2,8 +2,13 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { connectDB } from './DB/connectDB.js';
+
+// Needed for ES module to use `__dirname`
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //User
 import authRoutes from './Routes/auth.route.js';
@@ -30,6 +35,7 @@ app.use(cookieParser()); //allow us to parse incoming cookies
 //User Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/fine", fineRoutes); // Fine-related routes
+app.use("/fine-images", express.static(path.join(__dirname, "middleware", "ValidationFine_Images")));
 
 //Admin Routes
 app.use("/api/admin", adminRoutes);

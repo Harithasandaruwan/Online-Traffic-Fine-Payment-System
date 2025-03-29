@@ -1,5 +1,6 @@
 import Fine from "../Models/FineReceipt.model.js";
 
+//Upload a new fine image.
 export const uploadFineImage = async (req, res) => {
     try {
       if (!req.file) {
@@ -34,3 +35,13 @@ export const uploadFineImage = async (req, res) => {
     }
   };
   
+  //Get all fine details.
+  export const getAllFineDetails = async (req, res) => {
+    try {
+      const fines = await Fine.find({});
+      res.status(200).json(fines);
+    } catch (error) {
+      console.error("Error fetching fine details:", error);
+      res.status(500).json({ error: "Failed to fetch fine details" });
+    }
+  };

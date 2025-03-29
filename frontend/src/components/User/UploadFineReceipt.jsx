@@ -53,7 +53,7 @@ const UploadFineReceipt = () => {
           setMessageType("success");
           // Optionally delay navigation to allow user to see the message
           setTimeout(() => {
-            navigate("/profile");
+            navigate("/fine-data-list");
           }, 2000); // 2-second delay before navigating
         } else {
           setMessage("Unexpected response from the server.");
