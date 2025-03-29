@@ -7,10 +7,12 @@ const GetUser = () => {
   const handleUpload = (e) => {
     const formdata = new FormData();
     formdata.append('file', file);
-    axios.post('http://localhost:3000/upload', formdata)
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
-  };
+    axios.post('http://localhost:3000/api/fine/upload', formdata, {
+  headers: { "Content-Type": "multipart/form-data" }
+})
+.then(res => console.log(res))
+.catch(err => console.log(err));
+};
   return (
     <div>
       <input type="file" onChange={e => setFile(e.target.files[0])} />
