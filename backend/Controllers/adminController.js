@@ -172,10 +172,11 @@ export const getAllUsers = async (req, res) => {
 // Get all fines
 export const getAllFines = async (req, res) => {
   try {
-    const fines = await FineReceipt.find(); // Fetch all fines
+    const fines = await FineReceipt.find();
+    console.log("Fines from DB:", fines); // Debugging log
     res.status(200).json(fines);
   } catch (error) {
-    console.error("Fetch Fines Error:", error);
-    res.status(500).json({ message: "Error fetching fines", error: error.message });
+    console.error("Error fetching fines:", error);
+    res.status(500).json({ message: "Failed to fetch fines", error: error.message });
   }
 };

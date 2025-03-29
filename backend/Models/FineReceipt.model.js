@@ -26,6 +26,12 @@ const FineReceiptSchema = new mongoose.Schema({
     required: true 
   },
 
+  status: { 
+    type: String, 
+    enum: ["Pending", "Approved", "Rejected"], 
+    default: "Pending" 
+  },
+
   createdAt: { 
     type: Date, 
     default: Date.now 

@@ -24,27 +24,26 @@ const FineManagement = () => {
   const fetchFines = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/admin/fines', {
-        headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` }
+      const adminToken = localStorage.getItem("adminToken");
+      if (!adminToken) {
+        navigate("/admin/login");
+        return;
+      }
+  
+      const response = await axios.get("http://localhost:3000/api/admin/fines", {  // Ensure full URL
+        headers: { Authorization: `Bearer ${adminToken}` },
       });
   
-      console.log("Fetched fines data:", response.data); // Debugging log
-  
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        setFines(response.data);
-      } else {
-        setFines([]); // Set to empty array if response is not valid
-      }
+      console.log("Fetched fines data:", response.data); 
+      setFines(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error("Error fetching fines:", error);
-      setFines([]); // Ensure state is set even on error
+      console.error("Error fetching fines:", error.response?.data || error.message);
+      setFines([]);
     } finally {
       setLoading(false);
     }
   };
   
-  
-
   const filteredFines = fines.filter((fine) => {
     const matchesFilter =
       filter === "all" || fine.status.toLowerCase() === filter.toLowerCase();
