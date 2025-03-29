@@ -8,6 +8,7 @@ import Profile from "./components/User/Profile";
 import Update from "./components/User/Update";
 import UploadFineReceipt from "./components/User/UploadFineReceipt";
 import ForgotPassword from "./components/User/ForgotPasswordPage";
+import Upload from "./components/User/getuser";
 
 //Admin Management System
 import AdminLogin from "./components/Admin/AdminLogin";
@@ -51,6 +52,7 @@ function App() {
         <Route path="/update" element={<Update />} />
         <Route path="/upload-fine-receipt" element={<UploadFineReceipt />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/up" element={<Upload />} />
 
         {/* Admin Routes */}
         <Route path="/admin/register" element={<AdminRegister />} />
