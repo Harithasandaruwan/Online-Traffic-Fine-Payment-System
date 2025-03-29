@@ -32,19 +32,6 @@ router.get("/profile", protectAdmin, getAdminProfile);
 router.get("/users", protectAdmin, getAllUsers);
 router.get("/fines", protectAdmin, getAllFines);
 
-router.put("/fines/:id", protectAdmin, async (req, res) => {
-  try {
-    const { status } = req.body;
-    const fine = await FineReceipt.findById(req.params.id);
-    if (!fine) return res.status(404).json({ message: "Fine not found" });
-
-    fine.status = status;
-    await fine.save();
-    res.json({ message: "Fine status updated", fine });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 
 export default router;
