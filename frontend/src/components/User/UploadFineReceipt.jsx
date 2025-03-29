@@ -10,29 +10,63 @@ const UploadFineReceipt = () => {
   const [licenseNumber, setLicenseNumber] = useState("");
   const [issueDate, setIssueDate] = useState("");
   const [section, setSection] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState();
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const navigate = useNavigate();
 
-  const handleFileChange = (e) => {
+  // const handleFileChange = (e) => {
+  //   const formdata = new FormData();
+  //   formdata.append('file', file);
+  //   axios.post('http://localhost:3000/upload', formdata)
+  //   .then(res => console.log(res))
+  //   .catch(err => console.log(err))
+  // };
+
+  // const submitFineProof = () => {
+  //   if (!vehicleNumber || !licenseNumber || !section || !issueDate || !file) {
+  //     setMessage("Please fill all the required fields and upload the fine receipt.");
+  //     setMessageType("error");
+  //     return;
+  //   }
+
+  //   setMessage(""); // Clear any previous error messages
+  //   navigate("/payment");
+  // };
+
+  const handleUpload = () => {
     const formdata = new FormData();
     formdata.append('file', file);
-    axios.post('http://localhost:3000/upload', formdata)
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
+    formdata.append('vehicleNumber', vehicleNumber);
+    formdata.append('licenseNumber', licenseNumber);
+    formdata.append('issueDate', issueDate);
+    formdata.append('section', section);
+  
+    axios
+      .post('http://localhost:3000/api/fine/upload', formdata, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        // Check if backend confirms data storage successfully
+        if (res.status === 201) {
+          setMessage("File uploaded successfully!");
+          setMessageType("success");
+          // Optionally delay navigation to allow user to see the message
+          setTimeout(() => {
+            navigate("/fine-data-list");
+          }, 2000); // 2-second delay before navigating
+        } else {
+          setMessage("Unexpected response from the server.");
+          setMessageType("error");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setMessage("File upload failed.");
+        setMessageType("error");
+      });
   };
-
-  const submitFineProof = () => {
-    if (!vehicleNumber || !licenseNumber || !section || !issueDate || !file) {
-      setMessage("Please fill all the required fields and upload the fine receipt.");
-      setMessageType("error");
-      return;
-    }
-
-    setMessage(""); // Clear any previous error messages
-    navigate("/payment");
-  };
+  
 
   return (
     <div className="relative">
@@ -116,7 +150,7 @@ const UploadFineReceipt = () => {
                 type="file"
                 className="hidden"
                 accept=".pdf,.png,.jpg"
-                onChange={handleFileChange}
+                onChange={e => setFile(e.target.files[0])}
                 id="fileUpload"
               />
               <label htmlFor="fileUpload" className="cursor-pointer">
@@ -136,7 +170,7 @@ const UploadFineReceipt = () => {
             className="w-full mt-6 py-3 px-4 bg-[#C68EFD] text-white font-bold rounded-lg shadow-lg hover:bg-[#B07CE5] focus:outline-none focus:ring-2 focus:ring-[#C68EFD] transition duration-200"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={submitFineProof}
+            onClick={handleUpload}
           >
             Submit
           </motion.button>

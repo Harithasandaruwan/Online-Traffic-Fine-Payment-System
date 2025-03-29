@@ -1,65 +1,47 @@
-import FineReceipt from '../models/FineReceipt.model.js';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import Fine from "../Models/FineReceipt.model.js";
 
-// Fix for __dirname in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Multer Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const fileTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (fileTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type'));
+//Upload a new fine image.
+export const uploadFineImage = async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+  
+      // Extract additional required fields from req.body
+      const { vehicleNumber, licenseNumber, issueDate, section } = req.body;
+  
+      // Validate that all required fields are present
+      if (!vehicleNumber || !licenseNumber || !issueDate || !section) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+  
+      // Save fileUrl instead of image
+      const fine = await Fine.create({ 
+        vehicleNumber,
+        licenseNumber,
+        issueDate,
+        section,
+        fileUrl: req.file.filename
+      });
+  
+      res.status(201).json({ 
+        message: "File uploaded", 
+        filename: req.file.filename,
+        fine
+      });
+    } catch (error) {
+      console.error("Upload Error:", error);
+      res.status(500).json({ error: "File upload failed" });
     }
-  }
-});
-
-export const uploadMiddleware = upload.single('file');
-
-export const submitFineReceipt = async (req, res) => {
-  try {
-    const { vehicleNumber, licenseNumber, issueDate, section } = req.body;
-    if (!req.file) {
-      return res.status(400).json({ error: 'File upload is required' });
+  };
+  
+  //Get all fine details.
+  export const getAllFineDetails = async (req, res) => {
+    try {
+      const fines = await Fine.find({});
+      res.status(200).json(fines);
+    } catch (error) {
+      console.error("Error fetching fine details:", error);
+      res.status(500).json({ error: "Failed to fetch fine details" });
     }
-    const fileUrl = `/uploads/${req.file.filename}`;
-    const newReceipt = new FineReceipt({ vehicleNumber, licenseNumber, issueDate, section, fileUrl });
-    await newReceipt.save();
-    res.status(201).json({ message: 'Fine receipt uploaded successfully', receipt: newReceipt });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const getFineReceipts = async (req, res) => {
-  try {
-    const receipts = await FineReceipt.find();
-    res.status(200).json(receipts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+  };
