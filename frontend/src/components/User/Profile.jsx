@@ -5,6 +5,7 @@ import { calculateGenderAndDOB } from "../User Tools/NicCalculator";
 import Prediction from "../User Tools/Profile-tool/Prediction";
 import axios from "axios";
 import "./Profile.css";
+import Navbar from "../nav/Navbar";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -69,6 +70,8 @@ const Profile = () => {
 
   return (
     <div className="container">
+      {/* Navigation Bar */}
+      <Navbar/><br />
       <div className="profile-layout">
         {/* Profile Card */}
         <div className="profile-card">
