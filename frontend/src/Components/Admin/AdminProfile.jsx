@@ -23,7 +23,7 @@ const AdminProfile = () => {
         {/* Admin Header */}
         <div className="flex justify-between items-center mb-8 relative z-50">
           <div>
-            <h1 className="text-3xl font-bold text-white">Admin Profile</h1>
+            <h1 className="text-3xl font-bold text-black">Admin Profile</h1>
             <p className="text-gray-400">Welcome back, {user?.firstName}</p>
           </div>
           <button
