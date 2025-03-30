@@ -15,6 +15,7 @@ const Navbar = () => {
           <Link to="/about">About</Link>
           <Link to="/services">Services</Link>
           <Link to="/contact">Contact</Link>
+          <Link to="/upload-fine-receipt">Fine pay</Link>
         </div>
         <div className="auth-buttons">
           <Link to="/profile" className="profile-link">

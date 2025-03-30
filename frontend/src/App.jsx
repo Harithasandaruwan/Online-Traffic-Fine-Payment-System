@@ -9,6 +9,7 @@ import Update from "./components/User/Update";
 import UploadFineReceipt from "./components/User/UploadFineReceipt";
 import ForgotPassword from "./components/User/ForgotPasswordPage";
 import FineDataList from "./components/User/FineDatailList";
+import FineUser from "./components/User/FineDetailUser";
 
 //Admin Management System
 import AdminLogin from "./Components/Admin/AdminLogin";
@@ -40,9 +41,9 @@ function App() {
             : "min-h-screen bg-gradient-to-b from-purple-800 via-purple-600 to-purple-300 flex items-center justify-center relative overflow-hidden" // Dark Cosmic Theme (User)
         }`}
     >
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
+      {/* <div className="absolute top-0 left-0 w-full h-full -z-10">
         <FloatingShape />
-      </div>
+      </div> */}
 
       <Routes>
         {/* User Routes */}
@@ -53,6 +54,7 @@ function App() {
         <Route path="/upload-fine-receipt" element={<UploadFineReceipt />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/fine-data-list" element={<FineDataList />} />
+        <Route path="/fine-user" element={<FineUser />} />
 
         {/* Admin Routes */}
         <Route path="/admin/register" element={<AdminRegister />} />
